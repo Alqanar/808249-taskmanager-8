@@ -6,31 +6,97 @@ let filterElement = ``;
 const namesFilterDict = [
   {
     id: `filter__all`,
-    label: `ALL`
+    label: `ALL`,
+    checked: true
   },
   {
     id: `filter__overdue`,
-    label: `OVERDUE`
+    label: `OVERDUE`,
+    checked: false
   },
   {
     id: `filter__today`,
-    label: `TODAY`
+    label: `TODAY`,
+    checked: false
   },
   {
     id: `filter__favorites`,
-    label: `FAVORITES`
+    label: `FAVORITES`,
+    checked: false
   },
   {
     id: `filter__repeating`,
-    label: `REPEATING`
+    label: `REPEATING`,
+    checked: false
   },
   {
     id: `filter__tags`,
-    label: `TAGS`
+    label: `TAGS`,
+    checked: false
   },
   {
     id: `filter__archive`,
-    label: `ARCHIVE`
+    label: `ARCHIVE`,
+    checked: false
+  }
+];
+
+const cardsData = [
+  {
+    color: `black`,
+    text: `This is example of new task, you can add picture, set date and time, add tags.`,
+    data: `no`,
+    repeat: `no`,
+    hashtags: [],
+    deadline: false
+  },
+  {
+    color: `pink`,
+    text: `It is example of repeating task. It marks by wave.`,
+    data: `no`,
+    repeat: `yes`,
+    hashtags: [`#repeat`, `#cinema`, `#entertaiment`],
+    deadline: false
+  },
+  {
+    color: `yellow`,
+    text: `This is card with missing deadline`,
+    data: `no`,
+    repeat: `no`,
+    hashtags: [`#repeat`, `#cinema`, `#entertaiment`],
+    deadline: true
+  },
+  {
+    color: `yellow`,
+    text: `Here is a card with filled data`,
+    data: `yes`,
+    repeat: `yes`,
+    hashtags: [`#repeat`, `#cinema`, `#entertaiment`],
+    deadline: false
+  },
+  {
+    color: `blue`,
+    text: ``,
+    data: `no`,
+    repeat: `no`,
+    hashtags: [`#repeat`, `#cinema`, `#entertaiment`],
+    deadline: false
+  },
+  {
+    color: `blue`,
+    text: ``,
+    data: `yes`,
+    repeat: `no`,
+    hashtags: [`#repeat`, `#cinema`, `#entertaiment`],
+    deadline: false
+  },
+  {
+    color: `blue`,
+    text: ``,
+    data: `no`,
+    repeat: `yes`,
+    hashtags: [],
+    deadline: false
   }
 ];
 
@@ -47,6 +113,7 @@ const createFilter = (filter, count) =>
     id="${filter.id}"
     class="filter__input visually-hidden"
     name="filter"
+    ${filter.checked ? `checked` : ``}
     ${count <= 0 ? `disabled` : ``}
     />
     <label for="${filter.id}" class="filter__label">
