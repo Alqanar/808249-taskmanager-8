@@ -67,7 +67,8 @@ const cardsData = [
     text: `Here is a card with filled data`,
     date: true,
     repeat: true,
-    hashtags: [`repeat`, `cinema`, `entertaiment`]
+    hashtags: [`repeat`, `cinema`, `entertaiment`],
+    src: `img/sample-img.jpg`
   },
   {
     id: 5,
@@ -78,7 +79,8 @@ const cardsData = [
     id: 6,
     color: `blue`,
     date: true,
-    hashtags: [`repeat`, `cinema`, `entertaiment`]
+    hashtags: [`repeat`, `cinema`, `entertaiment`],
+    src: `img/sample-img.jpg`
   },
   {
     id: 7,
@@ -88,6 +90,8 @@ const cardsData = [
 ];
 
 const WEEK_DAYS = ['mo', 'tu', 'we', 'th', 'fr', 'sa', 'su'];
+
+const COLORS = [`black`, `yellow`, `blue`, `green`, `pink`];
 
 let prepareData = [];
 
@@ -125,7 +129,7 @@ const prepareDataForTemplate = (data) => {
     date = false,
     repeat = false,
     hashtags = [],
-    src,
+    src = `img/add-photo.svg`,
     deadline = false
   } = data;
 
@@ -214,7 +218,7 @@ const renderDate = (taskData) =>
 
 const createHashtag = (taskData) => {
   let hashtags = '';
-  for (let i = 0; i < taskData.hashtags; i++) {
+  for (let i = 0; i < taskData.hashtags.length; i++) {
     hashtags +=
       `<span class="card__hashtag-inner">
         <input type="hidden" name="hashtag" value="repeat" class="card__hashtag-hidden-input">
@@ -248,16 +252,52 @@ const renderDetails = (taskData) =>
     ${renderHashtags(taskData)}
   </div>`;
 
+const renderPicture = (taskData) =>
+  `<label class="card__img-wrap ${taskData.src === `img/add-photo.svg` ? `card__img-wrap--empty` : ``}">
+  <input type="file" class="card__img-input visually-hidden" name="img" />
+  <img src=${taskData.src} alt="task picture" class="card__img" />
+</label>`;
+
+const createColor = (elementColor, taskData) =>
+  `<input type="radio" id="color-${elementColor}-${taskData.id}"
+    class="card__color-input card__color-input--${elementColor} visually-hidden" name="color" value=${elementColor}
+    ${taskData.color === elementColor ? `checked` : ``}
+  />
+  <label for="color-${elementColor}-${taskData.id}" class="card__color card__color--${elementColor}">
+    ${elementColor}
+  </label>`;
+
+const renderSelectionColor = (taskData) =>
+  `<div class="card__colors-inner">
+    <h3 class="card__colors-title">Color</h3>
+    <div class="card__colors-wrap">
+      ${COLORS.map((element) => createColor(element, taskData)).join(``)}
+    </div>
+  </div>`;
+
 const renderSettings = (taskData) =>
   `<div class="card__settings">
     ${renderDetails(taskData)}
+    ${renderPicture(taskData)}
+    ${renderSelectionColor(taskData)}
   </div>`;
+
+const renderStatusButtons = () =>
+  `<div class="card__status-btns">
+    <button class="card__save" type="submit">save</button>
+    <button class="card__delete" type="button">delete</button>
+  </div>`
 
 prepareData = cardsData.map((element) => prepareDataForTemplate(element));
 
 const templateCard = (prepareData) => {
   const card = document.createElement('article');
-  card.className = `card card--edit card--${prepareData.color} ${prepareData.repeat ? `card--repeat` : ``}`;
+  card.className =
+    `card 
+    card--edit 
+    card--${prepareData.color} 
+    ${prepareData.repeat ? `card--repeat` : ``}
+    ${prepareData.deadline ? `card--deadline` : ``}`;
   card.innerHTML =
     `<form class="card__form" method="get">
       <div class="card__inner">
@@ -265,6 +305,7 @@ const templateCard = (prepareData) => {
         ${renderCardBars()}
         ${renderText(prepareData)}
         ${renderSettings(prepareData)}
+        ${renderStatusButtons()}
       </div>
     </form>`;
   return card;
