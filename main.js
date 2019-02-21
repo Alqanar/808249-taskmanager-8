@@ -1,6 +1,7 @@
 'use strict'
 
 const containerCards = document.querySelector(`.board__tasks`);
+const containerElementFilter = document.querySelector(`.main__filter`);
 let filterElement = ``;
 
 const NamesFilterDict = [
@@ -97,10 +98,8 @@ let preparedData = [];
 const getRandomInteger = (min, max) =>
   min + Math.floor(Math.random() * (max + 1 - min));
 
-const renderFilterElement = (element) => {
-  const containerElementFilter = document.querySelector(`.main__filter`);
-  return containerElementFilter.innerHTML = element;
-}
+const renderFilterElement = (element) =>
+  containerElementFilter.innerHTML = element;
 
 const createFilterElement = (filter, count) =>
   `<input
@@ -331,3 +330,11 @@ const renderBoardCards = (cardsFragment) => {
 renderBoardCards(createCardsFragment(preparedData));
 
 
+
+
+containerElementFilter.addEventListener(
+  `click`,
+  () => renderBoardCards(
+    createCardsFragment(preparedData.slice(0, getRandomInteger(1, 7)))
+  )
+)
