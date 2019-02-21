@@ -1,10 +1,9 @@
 'use strict'
 
-const containerElementFilter = document.querySelector(`.main__filter`);
 const containerCards = document.querySelector(`.board__tasks`);
 let filterElement = ``;
 
-const namesFilterDict = [
+const NamesFilterDict = [
   {
     id: `filter__all`,
     label: `ALL`,
@@ -93,15 +92,17 @@ const WEEK_DAYS = ['mo', 'tu', 'we', 'th', 'fr', 'sa', 'su'];
 
 const COLORS = [`black`, `yellow`, `blue`, `green`, `pink`];
 
-let prepareData = [];
+let preparedData = [];
 
 const getRandomInteger = (min, max) =>
   min + Math.floor(Math.random() * (max + 1 - min));
 
-const renderFilter = (element) =>
-  containerElementFilter.innerHTML = element;
+const renderFilterElement = (element) => {
+  const containerElementFilter = document.querySelector(`.main__filter`);
+  return containerElementFilter.innerHTML = element;
+}
 
-const createFilter = (filter, count) =>
+const createFilterElement = (filter, count) =>
   `<input
     type="radio"
     id="${filter.id}"
@@ -114,10 +115,14 @@ const createFilter = (filter, count) =>
     ${filter.label} <span class="filter__all-count">${count}</span></label
   >`;
 
-for (let i = 0; i < namesFilterDict.length; i++) {
-  filterElement += createFilter(namesFilterDict[i], getRandomInteger(0, 10));
-}
-renderFilter(filterElement);
+const renderFilterTemplate = (array) => {
+  for (let i = 0; i < array.length; i++) {
+    filterElement += createFilterElement(array[i], getRandomInteger(0, 10));
+  }
+  renderFilterElement(filterElement);
+};
+
+renderFilterTemplate(NamesFilterDict)
 
 
 
@@ -165,20 +170,20 @@ const renderCardBars = () =>
     </svg>
   </div>`;
 
-const renderText = (taskData) =>
+const renderText = (text) =>
   `<div class="card__textarea-wrap">
     <label>
-      <textarea class="card__text" placeholder="Start typing your text here..." name="text">${taskData.text}
+      <textarea class="card__text" placeholder="Start typing your text here..." name="text">${text}
       </textarea>
     </label>
   </div>`;
 
-const renderDeadline = (taskData) =>
+const renderDeadline = (date) =>
   `<button class="card__date-deadline-toggle" type="button">
-    date: <span class="card__date-status">${taskData.date ? `yes` : `no`}</span>
+    date: <span class="card__date-status">${date ? `yes` : `no`}</span>
   </button>
 
-  <fieldset class="card__date-deadline" ${taskData.date ? `` : `disabled`}>
+  <fieldset class="card__date-deadline" ${date ? `` : `disabled`}>
     <label class="card__input-deadline-wrap">
       <input class="card__date" type="text" placeholder="23 September" name="date" />
     </label>
@@ -187,43 +192,43 @@ const renderDeadline = (taskData) =>
     </label>
   </fieldset>`;
 
-const createDay = (day, taskData) =>
+const createDay = (day, id) =>
   `<input
     class="visually-hidden card__repeat-day-input"
     type="checkbox"
-    id="repeat-${day}-${taskData.id}"
+    id="repeat-${day}-${id}"
     name="repeat"
     value="${day}"
   />
-  <label class="card__repeat-day" for="repeat-${day}-${taskData.id}">${day}</label>`;
+  <label class="card__repeat-day" for="repeat-${day}-${id}">${day}</label>`;
 
-const renderWeekDays = (taskData) =>
+const renderWeekDays = (id) =>
   `<div class="card__repeat-days-inner">
-    ${WEEK_DAYS.map((element) => createDay(element, taskData)).join(``)}
+    ${WEEK_DAYS.map((element) => createDay(element, id)).join(``)}
   </div>`;
 
-const renderRepeat = (taskData) =>
+const renderRepeat = ({ id, repeat }) =>
   `<button class="card__repeat-toggle" type="button">
-      repeat:<span class="card__repeat-status">${taskData.repeat ? `yes` : `no`}</span>
+      repeat:<span class="card__repeat-status">${repeat ? `yes` : `no`}</span>
   </button>
-  <fieldset class="card__repeat-days" ${taskData.repeat ? `` : `disabled`}>
-   ${renderWeekDays(taskData)}
+  <fieldset class="card__repeat-days" ${repeat ? `` : `disabled`}>
+   ${renderWeekDays(id)}
   </fieldset>`;
 
-const renderDate = (taskData) =>
+const renderDate = ({ date, id, repeat }) =>
   `<div class="card__dates">
-    ${renderDeadline(taskData)}
-    ${renderRepeat(taskData)}
+    ${renderDeadline({ date })}
+    ${renderRepeat({ id, repeat })}
   </diiv`;
 
-const createHashtag = (taskData) => {
+const createHashtag = (hashtagArray) => {
   let hashtags = '';
-  for (let i = 0; i < taskData.hashtags.length; i++) {
+  for (let hashtag of hashtagArray) {
     hashtags +=
       `<span class="card__hashtag-inner">
         <input type="hidden" name="hashtag" value="repeat" class="card__hashtag-hidden-input">
         <button type="button" class="card__hashtag-name">
-          #${taskData.hashtags[i]}
+          #${hashtag}
         </button>
         <button type="button" class="card__hashtag-delete">
           delete
@@ -233,10 +238,10 @@ const createHashtag = (taskData) => {
   return hashtags;
 };
 
-const renderHashtags = (taskData) =>
+const renderHashtag = (hashtags) =>
   `<div class="card__hashtag">
     <div class="card__hashtag-list">
-      ${createHashtag(taskData)}
+      ${createHashtag(hashtags)}
     </div>
     
     <label>
@@ -249,36 +254,36 @@ const renderHashtags = (taskData) =>
 const renderDetails = (taskData) =>
   `<div class="card__details">
     ${renderDate(taskData)}
-    ${renderHashtags(taskData)}
+    ${renderHashtag(taskData.hashtags)}
   </div>`;
 
-const renderPicture = (taskData) =>
-  `<label class="card__img-wrap ${taskData.src === `img/add-photo.svg` ? `card__img-wrap--empty` : ``}">
+const renderPicture = (pictureDirectory) =>
+  `<label class="card__img-wrap ${pictureDirectory === `img/add-photo.svg` ? `card__img-wrap--empty` : ``}">
   <input type="file" class="card__img-input visually-hidden" name="img" />
-  <img src=${taskData.src} alt="task picture" class="card__img" />
+  <img src=${pictureDirectory} alt="task picture" class="card__img" />
 </label>`;
 
-const createColor = (elementColor, taskData) =>
-  `<input type="radio" id="color-${elementColor}-${taskData.id}"
+const createColor = (elementColor, { id, color }) =>
+  `<input type="radio" id="color-${elementColor}-${id}"
     class="card__color-input card__color-input--${elementColor} visually-hidden" name="color" value=${elementColor}
-    ${taskData.color === elementColor ? `checked` : ``}
+    ${color === elementColor ? `checked` : ``}
   />
-  <label for="color-${elementColor}-${taskData.id}" class="card__color card__color--${elementColor}">
+  <label for="color-${elementColor}-${id}" class="card__color card__color--${elementColor}">
     ${elementColor}
   </label>`;
 
-const renderSelectionColor = (taskData) =>
+const renderSelectionColor = ({ id, color }) =>
   `<div class="card__colors-inner">
     <h3 class="card__colors-title">Color</h3>
     <div class="card__colors-wrap">
-      ${COLORS.map((element) => createColor(element, taskData)).join(``)}
+      ${COLORS.map((element) => createColor(element, { id, color })).join(``)}
     </div>
   </div>`;
 
 const renderSettings = (taskData) =>
   `<div class="card__settings">
     ${renderDetails(taskData)}
-    ${renderPicture(taskData)}
+    ${renderPicture(taskData.src)}
     ${renderSelectionColor(taskData)}
   </div>`;
 
@@ -288,27 +293,41 @@ const renderStatusButtons = () =>
     <button class="card__delete" type="button">delete</button>
   </div>`
 
-prepareData = cardsData.map((element) => prepareDataForTemplate(element));
+preparedData = cardsData.map((element) => prepareDataForTemplate(element));
 
-const templateCard = (prepareData) => {
+const renderCardElement = (preparedData) => {
   const card = document.createElement('article');
   card.className =
-    `card 
-    card--edit 
-    card--${prepareData.color} 
-    ${prepareData.repeat ? `card--repeat` : ``}
-    ${prepareData.deadline ? `card--deadline` : ``}`;
+    `card
+    card--${preparedData.color} 
+    ${preparedData.repeat ? `card--repeat` : ``}
+    ${preparedData.deadline ? `card--deadline` : ``}`;
   card.innerHTML =
     `<form class="card__form" method="get">
       <div class="card__inner">
         ${renderButtons()}
         ${renderCardBars()}
-        ${renderText(prepareData)}
-        ${renderSettings(prepareData)}
+        ${renderText(preparedData.text)}
+        ${renderSettings(preparedData)}
         ${renderStatusButtons()}
       </div>
     </form>`;
   return card;
 }
 
-containerCards.appendChild(templateCard(prepareData[3]));
+const createCardsFragment = (preparedData) => {
+  let cardsFragment = document.createDocumentFragment();
+  for (let data of preparedData) {
+    cardsFragment.appendChild(renderCardElement(data));
+  }
+  return cardsFragment;
+}
+
+const renderBoardCards = (cardsFragment) => {
+  containerCards.innerHTML = ``;
+  return containerCards.appendChild(cardsFragment);
+}
+
+renderBoardCards(createCardsFragment(preparedData));
+
+
