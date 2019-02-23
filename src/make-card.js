@@ -1,89 +1,6 @@
-
 const containerCards = document.querySelector(`.board__tasks`);
-const containerElementFilter = document.querySelector(`.main__filter`);
-let filterElement = ``;
-
-const cardsData = [
-  {
-    id: 1,
-    text: `This is example of new task, you can add picture, set date and time, add tags.`
-  },
-  {
-    id: 2,
-    color: `pink`,
-    text: `It is example of repeating task. It marks by wave.`,
-    repeat: true,
-    hashtags: [`repeat`, `cinema`, `entertaiment`]
-  },
-  {
-    id: 3,
-    color: `yellow`,
-    text: `This is card with missing deadline`,
-    hashtags: [`repeat`, `cinema`, `entertaiment`],
-    deadline: true
-  },
-  {
-    id: 4,
-    color: `yellow`,
-    text: `Here is a card with filled data`,
-    date: true,
-    repeat: true,
-    hashtags: [`repeat`, `cinema`, `entertaiment`],
-    src: `img/sample-img.jpg`
-  },
-  {
-    id: 5,
-    color: `blue`,
-    hashtags: [`repeat`, `cinema`, `entertaiment`]
-  },
-  {
-    id: 6,
-    color: `blue`,
-    date: true,
-    hashtags: [`repeat`, `cinema`, `entertaiment`],
-    src: `img/sample-img.jpg`
-  },
-  {
-    id: 7,
-    color: `blue`,
-    repeat: true
-  }
-];
-
-const WEEK_DAYS = ['mo', 'tu', 'we', 'th', 'fr', 'sa', 'su'];
-
+const WEEK_DAYS = [`mo`, `tu`, `we`, `th`, `fr`, `sa`, `su`];
 const COLORS = [`black`, `yellow`, `blue`, `green`, `pink`];
-
-let preparedData = [];
-
-
-renderFilterTemplate(NamesFilterDict)
-
-
-
-const prepareDataForTemplate = (data) => {
-  const {
-    id,
-    color = `black`,
-    text = ``,
-    date = false,
-    repeat = false,
-    hashtags = [],
-    src = `img/add-photo.svg`,
-    deadline = false
-  } = data;
-
-  return {
-    id,
-    color,
-    text,
-    date,
-    repeat,
-    hashtags,
-    src,
-    deadline
-  }
-}
 
 const renderButtons = () =>
   `<div class="card__control">
@@ -142,7 +59,7 @@ const renderWeekDays = (id) =>
     ${WEEK_DAYS.map((element) => createDay(element, id)).join(``)}
   </div>`;
 
-const renderRepeat = ({ id, repeat }) =>
+const renderRepeat = ({id, repeat}) =>
   `<button class="card__repeat-toggle" type="button">
       repeat:<span class="card__repeat-status">${repeat ? `yes` : `no`}</span>
   </button>
@@ -150,14 +67,14 @@ const renderRepeat = ({ id, repeat }) =>
    ${renderWeekDays(id)}
   </fieldset>`;
 
-const renderDate = ({ date, id, repeat }) =>
+const renderDate = ({date, id, repeat}) =>
   `<div class="card__dates">
-    ${renderDeadline({ date })}
-    ${renderRepeat({ id, repeat })}
+    ${renderDeadline({date})}
+    ${renderRepeat({id, repeat})}
   </diiv`;
 
 const createHashtag = (hashtagArray) => {
-  let hashtags = '';
+  let hashtags = ``;
   for (let hashtag of hashtagArray) {
     hashtags +=
       `<span class="card__hashtag-inner">
@@ -168,7 +85,7 @@ const createHashtag = (hashtagArray) => {
         <button type="button" class="card__hashtag-delete">
           delete
         </button>
-      </span>`
+      </span>`;
   }
   return hashtags;
 };
@@ -186,10 +103,10 @@ const renderHashtag = (hashtags) =>
     </label>
   </div>`;
 
-const renderDetails = (taskData) =>
+const renderDetails = ({date, id, repeat, hashtags}) =>
   `<div class="card__details">
-    ${renderDate(taskData)}
-    ${renderHashtag(taskData.hashtags)}
+    ${renderDate({date, id, repeat})}
+    ${renderHashtag(hashtags)}
   </div>`;
 
 const renderPicture = (pictureDirectory) =>
@@ -198,7 +115,7 @@ const renderPicture = (pictureDirectory) =>
   <img src=${pictureDirectory} alt="task picture" class="card__img" />
 </label>`;
 
-const createColor = (elementColor, { id, color }) =>
+const createColor = (elementColor, {id, color}) =>
   `<input type="radio" id="color-${elementColor}-${id}"
     class="card__color-input card__color-input--${elementColor} visually-hidden" name="color" value=${elementColor}
     ${color === elementColor ? `checked` : ``}
@@ -207,70 +124,57 @@ const createColor = (elementColor, { id, color }) =>
     ${elementColor}
   </label>`;
 
-const renderSelectionColor = ({ id, color }) =>
+const renderSelectionColor = ({id, color}) =>
   `<div class="card__colors-inner">
     <h3 class="card__colors-title">Color</h3>
     <div class="card__colors-wrap">
-      ${COLORS.map((element) => createColor(element, { id, color })).join(``)}
+      ${COLORS.map((element) => createColor(element, {id, color})).join(``)}
     </div>
   </div>`;
 
-const renderSettings = (taskData) =>
+const renderSettings = ({id, color, src, date, repeat, hashtags}) =>
   `<div class="card__settings">
-    ${renderDetails(taskData)}
-    ${renderPicture(taskData.src)}
-    ${renderSelectionColor(taskData)}
+    ${renderDetails({date, id, repeat, hashtags})}
+    ${renderPicture(src)}
+    ${renderSelectionColor({id, color})}
   </div>`;
 
 const renderStatusButtons = () =>
   `<div class="card__status-btns">
     <button class="card__save" type="submit">save</button>
     <button class="card__delete" type="button">delete</button>
-  </div>`
+  </div>`;
 
-preparedData = cardsData.map((element) => prepareDataForTemplate(element));
-
-const renderCardElement = (preparedData) => {
-  const card = document.createElement('article');
+// eslint-disable-next-line
+const renderCardElement = ({text, deadline, ...settingsParams}) => {
+  const card = document.createElement(`article`);
   card.className =
     `card
-    card--${preparedData.color} 
-    ${preparedData.repeat ? `card--repeat` : ``}
-    ${preparedData.deadline ? `card--deadline` : ``}`;
+    card--${settingsParams.color} 
+    ${settingsParams.repeat ? `card--repeat` : ``}
+    ${deadline ? `card--deadline` : ``}`;
   card.innerHTML =
     `<form class="card__form" method="get">
       <div class="card__inner">
         ${renderButtons()}
         ${renderCardBars()}
-        ${renderText(preparedData.text)}
-        ${renderSettings(preparedData)}
+        ${renderText(text)}
+        ${renderSettings(settingsParams)}
         ${renderStatusButtons()}
       </div>
     </form>`;
   return card;
-}
+};
 
-const createCardsFragment = (preparedData) => {
+export const createCardsFragment = (preparedData) => {
   let cardsFragment = document.createDocumentFragment();
   for (let data of preparedData) {
     cardsFragment.appendChild(renderCardElement(data));
   }
   return cardsFragment;
-}
+};
 
-const renderBoardCards = (cardsFragment) => {
+export const renderBoardCards = (cardsFragment) => {
   containerCards.innerHTML = ``;
   return containerCards.appendChild(cardsFragment);
-}
-
-renderBoardCards(createCardsFragment(preparedData));
-
-
-
-
-containerElementFilter.addEventListener(
-  `click`,
-  () => renderBoardCards(
-    createCardsFragment(preparedData.slice(0, getRandomInteger(1, 7)))
-  )
-)
+};
