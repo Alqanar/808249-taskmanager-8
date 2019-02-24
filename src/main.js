@@ -2,22 +2,24 @@ import {
   getRandomInteger
 } from './utils.js';
 import {
-  renderFilterTemplate
-} from './make-filter.js';
-import {
-  NamesFilterDict,
-  preparedData
-} from './data.js';
+  renderFilters
+} from './filters/renderFilters.js';
 import {
   createCardsFragment,
-  renderBoardCards,
-} from './make-card.js';
+  renderBoardCards
+} from './card/card.js';
+import {
+  NamesFilterDict
+} from './filters/namesFilterDict.js';
+import {
+  preparedData
+} from './data.js';
 
 
 const containerElementFilter = document.querySelector(`.main__filter`);
 
 
-renderFilterTemplate(NamesFilterDict);
+renderFilters(NamesFilterDict);
 
 
 renderBoardCards(createCardsFragment(preparedData));

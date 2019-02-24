@@ -1,4 +1,3 @@
-const containerCards = document.querySelector(`.board__tasks`);
 const WEEK_DAYS = [`mo`, `tu`, `we`, `th`, `fr`, `sa`, `su`];
 const COLORS = [`black`, `yellow`, `blue`, `green`, `pink`];
 
@@ -145,16 +144,14 @@ const renderStatusButtons = () =>
     <button class="card__delete" type="button">delete</button>
   </div>`;
 
-// eslint-disable-next-line
-const renderCardElement = ({text, deadline, ...settingsParams}) => {
-  const card = document.createElement(`article`);
-  card.className =
-    `card
+export const createCardTemplate = ({text, deadline, ...settingsParams}) =>
+  `<article
+    class =
+    "card
     card--${settingsParams.color} 
     ${settingsParams.repeat ? `card--repeat` : ``}
-    ${deadline ? `card--deadline` : ``}`;
-  card.innerHTML =
-    `<form class="card__form" method="get">
+    ${deadline ? `card--deadline` : ``}">
+    <form class="card__form" method="get">
       <div class="card__inner">
         ${renderButtons()}
         ${renderCardBars()}
@@ -162,19 +159,5 @@ const renderCardElement = ({text, deadline, ...settingsParams}) => {
         ${renderSettings(settingsParams)}
         ${renderStatusButtons()}
       </div>
-    </form>`;
-  return card;
-};
-
-export const createCardsFragment = (preparedData) => {
-  let cardsFragment = document.createDocumentFragment();
-  for (let data of preparedData) {
-    cardsFragment.appendChild(renderCardElement(data));
-  }
-  return cardsFragment;
-};
-
-export const renderBoardCards = (cardsFragment) => {
-  containerCards.innerHTML = ``;
-  return containerCards.appendChild(cardsFragment);
-};
+    </form>
+  </article>`;

@@ -1,41 +1,3 @@
-export const NamesFilterDict = [
-  {
-    id: `filter__all`,
-    label: `ALL`,
-    checked: true
-  },
-  {
-    id: `filter__overdue`,
-    label: `OVERDUE`,
-    checked: false
-  },
-  {
-    id: `filter__today`,
-    label: `TODAY`,
-    checked: false
-  },
-  {
-    id: `filter__favorites`,
-    label: `FAVORITES`,
-    checked: false
-  },
-  {
-    id: `filter__repeating`,
-    label: `REPEATING`,
-    checked: false
-  },
-  {
-    id: `filter__tags`,
-    label: `TAGS`,
-    checked: false
-  },
-  {
-    id: `filter__archive`,
-    label: `ARCHIVE`,
-    checked: false
-  }
-];
-
 export const cardsData = [
   {
     id: 1,
@@ -83,8 +45,6 @@ export const cardsData = [
   }
 ];
 
-let preparedData = [];
-
 const prepareDataForTemplate = (data) => {
   const {
     id,
@@ -109,8 +69,4 @@ const prepareDataForTemplate = (data) => {
   };
 };
 
-preparedData = cardsData.map((element) => prepareDataForTemplate(element));
-
-export {
-  preparedData as preparedData
-};
+export const preparedData = cardsData.map((element) => prepareDataForTemplate(element));
