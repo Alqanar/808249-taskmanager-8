@@ -5,9 +5,8 @@ import {
   renderFilters
 } from './filters/renderFilters.js';
 import {
-  createCardsFragment,
-  renderBoardCards
-} from './card/card.js';
+  createCardElement
+} from './card/createCardElement.js';
 import {
   NamesFilterDict
 } from './filters/namesFilterDict.js';
@@ -17,10 +16,23 @@ import {
 
 
 const containerElementFilter = document.querySelector(`.main__filter`);
-
+const containerCards = document.querySelector(`.board__tasks`);
 
 renderFilters(NamesFilterDict);
 
+
+const createCardsFragment = (arrayCards) => {
+  let cardsFragment = document.createDocumentFragment();
+  for (let elementCards of arrayCards) {
+    cardsFragment.appendChild(createCardElement(elementCards));
+  }
+  return cardsFragment;
+};
+
+const renderBoardCards = (cardsFragment) => {
+  containerCards.innerHTML = ``;
+  return containerCards.appendChild(cardsFragment);
+};
 
 renderBoardCards(createCardsFragment(preparedData));
 
