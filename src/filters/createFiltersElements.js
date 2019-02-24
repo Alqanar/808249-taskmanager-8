@@ -8,7 +8,7 @@ import {
 
 let filterElement = ``;
 
-export const createFiltersTemplate = (array) => {
+export const createFiltersElements = (array) => {
   for (let elementArray of array) {
     filterElement += createFilterTemplate(elementArray, getRandomInteger(0, 10));
   }
