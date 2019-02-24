@@ -2,8 +2,8 @@ import {
   getRandomInteger
 } from './utils.js';
 import {
-  renderFilters
-} from './filters/renderFilters.js';
+  createFiltersTemplate
+} from './filters/createFiltersTemplate.js';
 import {
   createCardElement
 } from './card/createCardElement.js';
@@ -17,6 +17,12 @@ import {
 
 const containerElementFilter = document.querySelector(`.main__filter`);
 const containerCards = document.querySelector(`.board__tasks`);
+
+
+const renderFilters = (filterElements) => {
+  containerElementFilter.innerHTML = ``;
+  return containerElementFilter.appendChild(createFiltersTemplate(filterElements));
+};
 
 renderFilters(NamesFilterDict);
 
