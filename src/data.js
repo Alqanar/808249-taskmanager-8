@@ -1,72 +1,77 @@
-export const cardsData = [
-  {
-    id: 1,
-    text: `This is example of new task, you can add picture, set date and time, add tags.`
-  },
-  {
-    id: 2,
-    color: `pink`,
-    text: `It is example of repeating task. It marks by wave.`,
-    repeat: true,
-    hashtags: [`repeat`, `cinema`, `entertaiment`]
-  },
-  {
-    id: 3,
-    color: `yellow`,
-    text: `This is card with missing deadline`,
-    hashtags: [`repeat`, `cinema`, `entertaiment`],
-    deadline: true
-  },
-  {
-    id: 4,
-    color: `yellow`,
-    text: `Here is a card with filled data`,
-    date: true,
-    repeat: true,
-    hashtags: [`repeat`, `cinema`, `entertaiment`],
-    src: `img/sample-img.jpg`
-  },
-  {
-    id: 5,
-    color: `blue`,
-    hashtags: [`repeat`, `cinema`, `entertaiment`]
-  },
-  {
-    id: 6,
-    color: `blue`,
-    date: true,
-    hashtags: [`repeat`, `cinema`, `entertaiment`],
-    src: `img/sample-img.jpg`
-  },
-  {
-    id: 7,
-    color: `blue`,
-    repeat: true
-  }
+import {
+  getMixedArray,
+  getRandomInteger,
+  getRandomBoolean
+} from './utils.js';
+
+const colors = [
+  `black`,
+  `pink`,
+  `yellow`,
+  `blue`,
+  `green`
 ];
 
-const prepareDataForTemplate = (data) => {
-  const {
-    id,
-    color = `black`,
-    text = ``,
-    date = false,
-    repeat = false,
-    hashtags = [],
-    src = `img/add-photo.svg`,
-    deadline = false
-  } = data;
+const titles = [
+  `Изучить теорию`,
+  `Сделать домашку`,
+  `Пройти интенсив на соточку`
+];
 
-  return {
-    id,
-    color,
-    text,
-    date,
-    repeat,
-    hashtags,
-    src,
-    deadline
-  };
+const hashtags = [
+  `repeat`,
+  `cinema`,
+  `entertaiment`,
+  `homework`,
+  `theory`,
+  `practice`,
+  `intensive`,
+  `keks`];
+
+const weekDays = [`mo`, `tu`, `we`, `th`, `fr`, `sa`, `su`];
+
+const MS_IN_WEEK = 7 * 24 * 60 * 60 * 1000;
+
+const getRandomDate = () => {
+  if (getRandomBoolean()) {
+    let dueDate = Date.now();
+    const isFuture = getRandomBoolean();
+
+    if (isFuture) {
+      dueDate += getRandomInteger(0, MS_IN_WEEK);
+    } else {
+      dueDate -= getRandomInteger(0, MS_IN_WEEK);
+    }
+
+    return {
+      value: new Date(dueDate),
+      isDeadline: dueDate < Date.now()
+    };
+  } else {
+    return {
+      value: undefined,
+      isDeadline: false
+    };
+  }
 };
 
-export const preparedData = cardsData.map((element) => prepareDataForTemplate(element));
+let getDataCards = () => {
+  let dataCards = [];
+  for (let i = 1; i < 8; i++) {
+    const dataCard = {
+      id: i,
+      color: colors[getRandomInteger(0, colors.length - 1)],
+      text: titles[getRandomInteger(0, titles.length - 1)],
+      date: getRandomDate(),
+      repeat: getRandomBoolean(),
+      hashtags: getMixedArray(hashtags).slice(0, getRandomInteger(0, 2)),
+      src: `http://picsum.photos/100/100?r=${Math.random()}`,
+      weekDays: weekDays.map((name) => ({name, boolean: getRandomBoolean()}))
+      // deadline: false
+    };
+    dataCards.push(dataCard);
+  }
+  return dataCards;
+};
+
+export const preparedData = getDataCards();

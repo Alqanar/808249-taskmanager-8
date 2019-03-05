@@ -7,3 +7,11 @@ export const createElement = (html) => {
   template.innerHTML = html;
   return template.content;
 };
+
+const getRandomComparator = () =>
+  Math.random() - 0.5;
+
+export const getMixedArray = (list) =>
+  list.slice(0).sort(getRandomComparator);
+
+export const getRandomBoolean = () => getRandomInteger(0, 100) < 50;

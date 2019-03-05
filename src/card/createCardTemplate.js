@@ -1,5 +1,18 @@
-const WEEK_DAYS = [`mo`, `tu`, `we`, `th`, `fr`, `sa`, `su`];
 const COLORS = [`black`, `yellow`, `blue`, `green`, `pink`];
+const Month = {
+  0: `January`,
+  1: `February`,
+  2: `March`,
+  3: `April`,
+  4: `May`,
+  5: `June`,
+  6: `July`,
+  7: `August`,
+  8: `September`,
+  9: `October`,
+  10: `November`,
+  11: `December`
+};
 
 const renderButtons = () =>
   `<div class="card__control">
@@ -29,47 +42,52 @@ const renderText = (text) =>
     </label>
   </div>`;
 
-const renderDeadline = (date) =>
+const renderDeadline = (value) =>
   `<button class="card__date-deadline-toggle" type="button">
-    date: <span class="card__date-status">${date ? `yes` : `no`}</span>
+    date: <span class="card__date-status">${value !== undefined ? `yes` : `no`}</span>
   </button>
 
-  <fieldset class="card__date-deadline" ${date ? `` : `disabled`}>
+  <fieldset class="card__date-deadline" ${value !== undefined ? `` : `disabled`}>
     <label class="card__input-deadline-wrap">
-      <input class="card__date" type="text" placeholder="23 September" name="date" />
+      <input class="card__date" type="text" 
+      placeholder="${value !== undefined ? value.getDate() : ``} ${value !== undefined ? Month[value.getMonth()] : ``}" 
+      name="date" />
     </label>
     <label class="card__input-deadline-wrap">
-      <input class="card__time" type="text" placeholder="11:15 PM" name="time" />
+      <input class="card__time" type="text" 
+      placeholder="${value !== undefined ? value.getHours() : ``}:${value !== undefined ? value.getMinutes() : ``}" 
+      name="time" />
     </label>
   </fieldset>`;
 
-const createDay = (day, id) =>
+const createDay = (day, id, boolean) =>
   `<input
     class="visually-hidden card__repeat-day-input"
     type="checkbox"
     id="repeat-${day}-${id}"
     name="repeat"
     value="${day}"
+    ${boolean ? `checked` : ``}
   />
   <label class="card__repeat-day" for="repeat-${day}-${id}">${day}</label>`;
 
-const renderWeekDays = (id) =>
+const renderWeekDays = ({weekDays, id}) =>
   `<div class="card__repeat-days-inner">
-    ${WEEK_DAYS.map((element) => createDay(element, id)).join(``)}
+    ${weekDays.map(({name, boolean}) => createDay(name, id, boolean)).join(``)}
   </div>`;
 
-const renderRepeat = ({id, repeat}) =>
+const renderRepeat = ({weekDays, id, repeat}) =>
   `<button class="card__repeat-toggle" type="button">
       repeat:<span class="card__repeat-status">${repeat ? `yes` : `no`}</span>
   </button>
   <fieldset class="card__repeat-days" ${repeat ? `` : `disabled`}>
-   ${renderWeekDays(id)}
+   ${renderWeekDays({weekDays, id})}
   </fieldset>`;
 
-const renderDate = ({date, id, repeat}) =>
+const renderDate = ({weekDays, date: {value}, id, repeat}) =>
   `<div class="card__dates">
-    ${renderDeadline({date})}
-    ${renderRepeat({id, repeat})}
+    ${renderDeadline(value)}
+    ${renderRepeat({weekDays, id, repeat})}
   </diiv`;
 
 const createHashtag = (hashtagArray) => {
@@ -102,9 +120,9 @@ const renderHashtag = (hashtags) =>
     </label>
   </div>`;
 
-const renderDetails = ({date, id, repeat, hashtags}) =>
+const renderDetails = ({weekDays, date, id, repeat, hashtags}) =>
   `<div class="card__details">
-    ${renderDate({date, id, repeat})}
+    ${renderDate({weekDays, date, id, repeat})}
     ${renderHashtag(hashtags)}
   </div>`;
 
@@ -131,9 +149,9 @@ const renderSelectionColor = ({id, color}) =>
     </div>
   </div>`;
 
-const renderSettings = ({id, color, src, date, repeat, hashtags}) =>
+const renderSettings = ({id, color, src, weekDays, date, repeat, hashtags}) =>
   `<div class="card__settings">
-    ${renderDetails({date, id, repeat, hashtags})}
+    ${renderDetails({weekDays, date, id, repeat, hashtags})}
     ${renderPicture(src)}
     ${renderSelectionColor({id, color})}
   </div>`;
@@ -144,13 +162,13 @@ const renderStatusButtons = () =>
     <button class="card__delete" type="button">delete</button>
   </div>`;
 
-export const createCardTemplate = ({text, deadline, ...settingsParams}) =>
+export const createCardTemplate = ({text, ...settingsParams}) =>
   `<article
     class =
     "card
     card--${settingsParams.color} 
     ${settingsParams.repeat ? `card--repeat` : ``}
-    ${deadline ? `card--deadline` : ``}">
+    ${settingsParams.date.isDeadline ? `card--deadline` : ``}">
     <form class="card__form" method="get">
       <div class="card__inner">
         ${renderButtons()}
